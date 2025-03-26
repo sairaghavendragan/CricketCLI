@@ -23,7 +23,7 @@ def toss  (  ):
     print("\n")    
     toss_result = "Heads" if result == 1 else "Tails"
     print(f"The coin shows: {toss_result}")
-    if (inp == "H" and result == 1) and (inp == "T" and result == 0):
+    if (inp == "H" and result == 1) or (inp == "T" and result == 0):
         print("you won the toss")
         return 1
      
