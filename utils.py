@@ -1,4 +1,5 @@
 from random import randint
+import time
 
 def player_input():
     inp =input("Enter from numbers 1,2,3,4,5,6 \n") 
@@ -8,20 +9,24 @@ def player_input():
     return inp    
 
 def toss  (  ):
-    #toss = 0
+    """Simulate the cricket toss"""#toss = 0
     result = randint(0, 1)
     inp = input("Enter H for Heads and T for Tails\n").strip().upper() 
-    #print(inp)
+    print(inp)
     while inp != "H" and inp != "T":
+        print("Invalid choice. Please enter H or T.")
         inp = input("Enter H for Heads and T for Tails\n").strip().upper()
-
-    if inp == "H" and result == 1:
+    print("\nTossing the coin...")
+    for _ in range(3):
+        print(".", end="", flush=True)
+        time.sleep(0.5)
+    print("\n")    
+    toss_result = "Heads" if result == 1 else "Tails"
+    print(f"The coin shows: {toss_result}")
+    if (inp == "H" and result == 1) and (inp == "T" and result == 0):
         print("you won the toss")
         return 1
-    elif inp == "T" and result == 0:
-        print("you won the toss")
-        return 1
-    
+     
     else :
         print("you lost the toss")  
         return 0  
@@ -45,6 +50,11 @@ def choose_bat_or_bowl(toss):
             return 0
             
     else:
+        print("computer won the toss and deciding...")
+        for _ in range(3):
+            print(".", end="", flush=True)
+            time.sleep(0.5)
+        print("\n")
         res = randint(0, 1)
         if res == 1:
             print("computer chose batting and you should bowl")
@@ -55,3 +65,12 @@ def choose_bat_or_bowl(toss):
             return 1
             
       
+def display_stats (batorder,bowlerstats):
+    """Helper function to display the batting and bowling statistics"""
+    print("Batting Statistics:")
+    for batsman, stats in batorder.items():  
+        print(f"{batsman}: {stats['runs']}({stats['balls']} ) ")  
+
+    print("\nBowling Statistics:") 
+    for bowler, stats in bowlerstats.items():
+        print(f"{bowler}: {stats['wickets']}/({stats['runs']} ) ")

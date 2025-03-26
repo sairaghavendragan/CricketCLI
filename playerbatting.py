@@ -1,98 +1,99 @@
 from random import randint,choice
 from utils import *
 
+def select_batsman(available_batsmen ):
+    """Helper function to select and validate the batsman"""  
+    print("available batsmen:",', '.join(available_batsmen))
+    batsman = input("Enter the batsman's name: ").strip().lower()
+    while batsman not in available_batsmen:
+        print("Invalid batsman. Please enter a valid batsman.")
+        print("available batsmen:",', '.join(available_batsmen))
+        batsman = input("Enter the batsman's name: ").strip().lower()
+    return batsman
+
+
+
+
+
 def pbat(bat, bowl,score=None):
-    inning1dict = {}
-
-    onstrike = input("Enter from names" + ', '.join(bat)  +   "\n").strip().lower()
-    while onstrike not in bat:
-        print("Enter a valid name")
-        onstrike = input("Enter from names" + ', '.join(bat) + "\n").strip().lower()
-    bat.remove(onstrike)
-
-
-    offstrike = input("Enter from names" + ', '.join(bat)  +   "\n").strip().lower()   
-    while offstrike not in bat:
-        print("Enter a valid name")
-        offstrike = input("Enter from names" + ', '.join(bat)  + "\n").strip().lower()
-    bat.remove(offstrike)
-
-    
-
-    #inning1dict["onstrike"] = onstrike
-    #inning1dict["offstrike"] = offstrike
-    inning1dict["score"] = 0
-    inning1dict["wickets"] = 0
+    inning1dict = {"score":0, "wickets":0}
+     
     batorder = {}
     bowlerstats = {}
+    onstrike = select_batsman(bat)
+    bat.remove(onstrike)
+    offstrike = select_batsman(bat)
+    bat.remove(offstrike)
     batorder[onstrike] = {"balls":0, "runs":0}
     batorder[offstrike] = {"balls":0, "runs":0}
     
     
     over = 0
-    balls = 0
+    #balls = 0
     prevbowler = "" 
 
     while over < 5:
-        bowler = choice(bowl[-2:] )
-        inning1dict["bowler"] = bowler
+        bowler = choice(bowl[-5:] )
+        #inning1dict["bowler"] = bowler
         if bowler not in bowlerstats.keys():
             bowlerstats[bowler] = {"runs":0, "wickets":0}
         bowl.remove(bowler)
         if over != 0:
 
             onstrike,offstrike = offstrike,onstrike
-        
+        print(f"  Bowler: {bowler} bowling the over")
 
         count = 0
+        over_runs = 0
+        avgrun = 0
+
 
         while count < 6:
+            print(f"\nScore: {inning1dict['score']}/{inning1dict['wickets']}")
+            print(f"Current batsman: {onstrike}")
             player1 = player_input()
-            comp1 = randint(1, 6) 
-            count+=1
-            print( comp1)
+            #avgrun = 0
+            avgrun = over_runs//count if count > 0 else 0
+            comp1 = randint(4, 6) if avgrun >=4 else randint(1, 6)
+
+            print("Bowler bowls: ", comp1)
+            count += 1
+            #balls += 1
+             
             if int(player1) == comp1:
                 print("wicket") 
-                inning1dict["wickets"] = inning1dict.get("wickets",0)+1
-                batorder[onstrike]["balls"] = batorder[onstrike].get("balls",0)+1
+                inning1dict["wickets"] = inning1dict ["wickets"]+ 1
+                batorder[onstrike]["balls"] = batorder[onstrike]["balls"] +1
                 if inning1dict["wickets"] == 10:
+                    print("innings over")
+                    display_stats(batorder,bowlerstats)
+                    
                     return inning1dict
 
-                onstrike = input("Enter from names" + ', '.join(bat)  +   "\n").strip().lower()
-                while onstrike not in bat:
-                    print("Enter a valid name")
-                    onstrike = input("Enter from names" + ', '.join(bat) + "\n").strip().lower()
+                onstrike = select_batsman(bat)
                 bat.remove(onstrike)  
                 batorder[onstrike] = {"balls":0, "runs":0}
-                bowlerstats[bowler]["wickets"]= bowlerstats[bowler].get("wickets",0)+1
-                print(bowlerstats)
+                bowlerstats[bowler]["wickets"]= bowlerstats[bowler]["wickets"]+1
+                #print(bowlerstats)
                 
             else:
-                if player1 in ['1','3','5']:
-                    inning1dict["score"] = inning1dict.get("score",0)+ int(player1)
-                    batorder[onstrike]["balls"] = batorder[onstrike].get("balls",0)+1
-                    batorder[onstrike]["runs"] = batorder[onstrike].get("runs",0)+ int (player1)
-                    bowlerstats[bowler]["runs"]= bowlerstats[bowler].get("runs",0) + int(player1)
-                    onstrike,offstrike= offstrike,onstrike
-                    print("you have scored", player1)
+                runs = int(player1)
+                inning1dict["score"] += runs
+                batorder[onstrike]["balls"] += 1
+                batorder[onstrike]["runs"] += runs
+                bowlerstats[bowler]["runs"] += runs
+                over_runs += runs
+                if runs in [1, 3, 5]:
+                    onstrike, offstrike = offstrike, onstrike
+                print("you have scored", player1)
 
-                else:
-                    inning1dict["score"] = inning1dict.get("score",0)+ int(player1)
-                    batorder[onstrike]["balls"] = batorder[onstrike].get("balls",0)+1
-                    batorder[onstrike]["runs"] = batorder[onstrike].get("runs",0)+ int(player1)
-                    bowlerstats[bowler]["runs"]= bowlerstats[bowler].get("runs",0) + int(player1)
-
-                    print("you have scored", player1)
-                    #print(batorder)
-            if score is not None and inning1dict.get("score",0) > score:  
-                print("player team won the match") 
-                print(batorder)
-                print(inning1dict)
-                print(bowlerstats)
-                return inning1dict    
+                 
+                    
+            if score is not None and inning1dict["score"] > score:  
+                print("\nTarget achieved!")
+                display_stats(batorder, bowlerstats)
+                return inning1dict
         over+=1
-        print(batorder)
-        print(inning1dict)
-        print(bowlerstats)
+        display_stats(batorder, bowlerstats)
 
     return inning1dict    
